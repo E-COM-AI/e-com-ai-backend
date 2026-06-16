@@ -1,3 +1,10 @@
+---
+name: Feature request
+about: 새로운 기능을 추가할 때 사용하세요
+title: "[FEAT] "
+labels: enhancement
+---
+
 ## 🛠️ 기능 설명
 - 어떤 기능을 추가하려 하시나요?
 
