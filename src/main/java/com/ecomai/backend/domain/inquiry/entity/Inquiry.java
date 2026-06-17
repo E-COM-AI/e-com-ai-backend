@@ -1,17 +1,15 @@
 package com.ecomai.backend.domain.inquiry.entity;
 
+import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
 import com.ecomai.backend.global.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 /**
  * 고객 문의 Entity
@@ -49,7 +47,7 @@ public class Inquiry extends BaseEntity {
     private Boolean toxicity;
 
     @Column(name = "priority_score", precision = 5, scale = 2)
-    private Double priorityScore;
+    private BigDecimal priorityScore;
 
     private String priority;
 
@@ -58,11 +56,15 @@ public class Inquiry extends BaseEntity {
 
     @Column(name = "ai_processed", nullable = false)
     @Builder.Default
-    private Boolean aiProcessed = false;
+    private boolean aiProcessed = false;
 
-    @Column(nullable = false)
+    /**
+     * 문의 상태
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     @Builder.Default
-    private String status = "OPEN";
+    private InquiryStatus status = InquiryStatus.OPEN;
 
     /**
      * AI 처리 완료 상태 변경

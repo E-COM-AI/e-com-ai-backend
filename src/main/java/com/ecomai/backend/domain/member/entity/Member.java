@@ -1,13 +1,8 @@
 package com.ecomai.backend.domain.member.entity;
 
+import com.ecomai.backend.domain.member.enums.Role;
 import com.ecomai.backend.global.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +36,14 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    /**
+     * 회원 권한
+     *
+     * EnumType.STRING
+     * DB에는 ROLE_USER, ROLE_ADMIN 문자열로 저장(-> 추후 테이블로 분리할 것)
+     */
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     @Builder.Default
-    private String role = "ROLE_USER";
+    private Role role = Role.ROLE_USER;
 }
