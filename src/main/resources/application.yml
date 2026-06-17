@@ -1,0 +1,26 @@
+spring:
+  # 데이터베이스 연결 설정
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    # JDBC 드라이버 클래스 이름
+    driver-class-name: org.postgresql.Driver
+
+  # JPA 및 Hibernate 설정
+  jpa:
+    # DDL 유효성 검사 설정 (validate: 엔티티와 DB 구조를 비교만 하고 변경은 하지 않음)
+    hibernate:
+      ddl-auto: validate
+
+    # 콘솔에 실행되는 SQL 출력 여부
+    show-sql: true
+
+    # SQL 출력 시 보기 좋게 정렬 (Format) 설정
+    properties:
+      hibernate:
+        format_sql: true
+
+# 서버 포트 설정
+server:
+  port: 8080
