@@ -76,7 +76,7 @@ public class Inquiry extends BaseEntity {
     /**
      * 상태 변경
      */
-    public void changeStatus(String status) {
+    public void changeStatus(InquiryStatus status) {
         this.status = status;
     }
 }

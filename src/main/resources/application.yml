@@ -25,10 +25,14 @@ spring:
 
 # 서버 포트 설정
 server:
-  port: 8080
+  port: 8081
 
 # 로깅 설정
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000

@@ -36,4 +36,12 @@ public class SignupRequest {
             example = "password1234"
     )
     private String password;
+
+    @NotBlank
+    private String passwordConfirm;
+
+    @NotBlank
+    @Size(max = 50)
+    private String name;
+
 }
