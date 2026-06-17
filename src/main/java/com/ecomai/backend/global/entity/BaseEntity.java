@@ -1,3 +1,11 @@
+package com.ecomai.backend.global.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
 /**
  * 공통 엔티티
  * - 생성/수정/삭제 정보 관리

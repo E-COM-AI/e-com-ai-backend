@@ -1,3 +1,18 @@
+package com.ecomai.backend.domain.inquiry.entity;
+
+import com.ecomai.backend.global.entity.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 /**
  * 고객 문의 Entity
  * - AI 분석 결과 포함 구조
