@@ -36,6 +36,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, length = 50)
+    private String name;
+
     /**
      * 회원 권한
      *
