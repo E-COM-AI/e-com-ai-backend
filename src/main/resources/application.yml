@@ -21,8 +21,14 @@ spring:
       hibernate:
         format_sql: true
 
-    open-in-view: false
+    open-in-view: false # Controller 이후 Lazy Loading 방지를 위해 비활성화
 
 # 서버 포트 설정
 server:
   port: 8080
+
+# 로깅 설정
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
