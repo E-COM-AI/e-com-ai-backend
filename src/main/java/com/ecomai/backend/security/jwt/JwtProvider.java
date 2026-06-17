@@ -1,10 +1,14 @@
 package com.ecomai.backend.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 /**
@@ -13,18 +17,51 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    private final String secret = "my-secret-key-my-secret-key-my-secret-key";
-    private final long validity = 1000L * 60 * 60; // 1시간
-
-    private final Key key = Keys.hmacShaKeyFor(secret.getBytes());
+    /**
+     * JWT 서명용 Key
+     */
+    private final SecretKey key;
 
     /**
-     * 토큰 생성
+     * Access Token 만료시간(ms)
+     *
+     * application.yml
+     * jwt:
+     *   expiration: 3600000
+     */
+    private final long expiration;
+
+    /**
+     * 생성자 주입
+     *
+     * @param secret JWT Secret Key
+     * @param expiration Access Token 만료시간(ms)
+     */
+    public JwtProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long expiration
+    ) {
+        this.key = Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
+
+        this.expiration = expiration;
+    }
+
+    /**
+     * JWT Access Token 생성
+     *
+     * @param memberId 회원 PK
+     * @param email 회원 이메일
+     * @return JWT 문자열
      */
     public String createToken(Long memberId, String email) {
 
         Date now = new Date();
-        Date expire = new Date(now.getTime() + validity);
+
+        Date expire = new Date(
+                now.getTime() + expiration
+        );
 
         return Jwts.builder()
                 .setSubject(String.valueOf(memberId))
@@ -36,30 +73,46 @@ public class JwtProvider {
     }
 
     /**
-     * memberId 추출
+     * JWT에서 회원 ID 추출
+     *
+     * @param token JWT
+     * @return memberId
      */
     public Long getMemberId(String token) {
+
         return Long.valueOf(
                 parseClaims(token).getSubject()
         );
     }
 
     /**
-     * 토큰 유효성 검사
+     * JWT 유효성 검사
+     *
+     * @param token JWT
+     * @return 유효 여부
      */
     public boolean validateToken(String token) {
+
         try {
+
             parseClaims(token);
+
             return true;
-        } catch (Exception e) {
+
+        } catch (Exception exception) {
+
             return false;
         }
     }
 
     /**
-     * claims 파싱
+     * JWT Claims 추출
+     *
+     * @param token JWT
+     * @return Claims
      */
     private Claims parseClaims(String token) {
+
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

@@ -18,6 +18,12 @@ public enum ErrorCode {
             "잘못된 요청입니다."
     ),
 
+    UNAUTHORIZED(
+            HttpStatus.UNAUTHORIZED,
+            "AUTH_401",
+            "인증이 필요합니다."
+    ),
+
     //@Valid 검증 실패용 에러
     INVALID_INPUT_VALUE(
             HttpStatus.BAD_REQUEST,
