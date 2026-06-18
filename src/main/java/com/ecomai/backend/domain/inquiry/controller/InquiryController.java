@@ -1,12 +1,15 @@
 package com.ecomai.backend.domain.inquiry.controller;
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
+import com.ecomai.backend.domain.inquiry.dto.request.UpdateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.UpdateInquiryResponse;
 import com.ecomai.backend.domain.inquiry.service.InquiryService;
 import com.ecomai.backend.global.response.ApiResponse;
 import com.ecomai.backend.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -107,4 +110,35 @@ public class InquiryController {
                 )
         );
     }
+
+    /**
+     * 문의 수정
+     */
+    @PatchMapping("/{inquiryId}")
+    @Operation(
+            summary = "문의 수정",
+            description = "OPEN 상태의 문의만 수정할 수 있습니다."
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    public ApiResponse<UpdateInquiryResponse> updateInquiry(
+            @Parameter(
+                    description = "문의 ID",
+                    example = "1"
+            )
+            @PathVariable
+            Long inquiryId,
+
+            @Valid
+            @RequestBody
+            UpdateInquiryRequest request
+    ) {
+
+        return ApiResponse.success(
+                inquiryService.updateInquiry(
+                        inquiryId,
+                        request
+                )
+        );
+    }
+
 }

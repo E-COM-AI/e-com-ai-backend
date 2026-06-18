@@ -71,6 +71,12 @@ public enum ErrorCode {
             "비밀번호가 일치하지 않습니다."
     ),
 
+    INVALID_INQUIRY_STATUS(
+            HttpStatus.BAD_REQUEST,
+            "INQUIRY_400",
+            "현재 상태에서는 수정할 수 없습니다."
+    ),
+
     /*
      * 문의 관련 에러
      */

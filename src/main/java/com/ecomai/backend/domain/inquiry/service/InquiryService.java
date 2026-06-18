@@ -1,9 +1,11 @@
 package com.ecomai.backend.domain.inquiry.service;
 
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
+import com.ecomai.backend.domain.inquiry.dto.request.UpdateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.UpdateInquiryResponse;
 import com.ecomai.backend.domain.inquiry.entity.Inquiry;
 import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
 import com.ecomai.backend.domain.inquiry.repository.InquiryRepository;
@@ -28,7 +30,6 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class InquiryService {
     /**
      * 문의 Repository
@@ -101,6 +102,7 @@ public class InquiryService {
      * @param pageable 페이지 번호, 사이즈, 정렬 정보가 포함된 Pageable 객체
      * @return 조회된 문의 목록(Page<InquiryListResponse>)
      */
+    @Transactional(readOnly = true)
     public PageResponse<InquiryListResponse> getMyInquiries(Pageable pageable) {
 
         // 현재 인증된 회원의 고유 식별자(ID)를 보안 컨텍스트에서 획득
@@ -144,6 +146,7 @@ public class InquiryService {
      * @param inquiryId 문의 ID
      * @return 문의 상세 정보
      */
+    @Transactional(readOnly = true)
     public InquiryDetailResponse getMyInquiry(Long inquiryId) {
 
         // 1. 현재 사용자 식별자 획득
@@ -168,4 +171,66 @@ public class InquiryService {
                 .createdAt(inquiry.getCreatedAt())
                 .build();
     }
+
+    /**
+     * 문의 수정
+     * OPEN 상태에서만 수정 가능
+     *
+     * @param inquiryId 문의 ID
+     * @param request 수정 요청
+     */
+    @Transactional
+    public UpdateInquiryResponse updateInquiry(
+            Long inquiryId,
+            UpdateInquiryRequest request
+    ) {
+
+        Long memberId =
+                securityUtil.getCurrentMemberId();
+
+        Inquiry inquiry =
+                inquiryRepository.findByIdAndIsDeletedFalse(
+                                inquiryId
+                        )
+                        .orElseThrow(
+                                () -> new BusinessException(
+                                        ErrorCode.INQUIRY_NOT_FOUND
+                                )
+                        );
+
+        /**
+         * 본인 문의 검증
+         */
+        if (!inquiry.getMember().getId().equals(memberId)) {
+            throw new BusinessException(
+                    ErrorCode.FORBIDDEN
+            );
+        }
+
+        /**
+         * OPEN 상태만 수정 가능
+         */
+        if (inquiry.getStatus() != InquiryStatus.OPEN) {
+            throw new BusinessException(
+                    ErrorCode.INVALID_INQUIRY_STATUS
+            );
+        }
+
+        inquiry.update(
+                request.getTitle(),
+                request.getContent()
+        );
+
+        return UpdateInquiryResponse.builder()
+                .inquiryId(inquiry.getId())
+                .title(inquiry.getTitle())
+                .content(inquiry.getContent())
+                .status(inquiry.getStatus())
+                .statusDisplay(
+                        inquiry.getStatus().getDisplay()
+                )
+                .updatedAt(inquiry.getUpdatedAt())
+                .build();
+    }
+
 }

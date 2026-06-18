@@ -83,4 +83,19 @@ public class Inquiry extends BaseEntity {
     public void changeStatus(InquiryStatus status) {
         this.status = status;
     }
+
+    /**
+     * 문의 수정
+     * OPEN 상태일 때만 수정 가능
+     *
+     * @param title 수정 제목
+     * @param content 수정 내용
+     */
+    public void update(
+            String title,
+            String content
+    ) {
+        this.title = title;
+        this.content = content;
+    }
 }
