@@ -1,13 +1,17 @@
 package com.ecomai.backend.domain.member.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 로그인 성공 응답 DTO
  */
-@Getter
 @Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthResponse {
 
     private Long memberId;

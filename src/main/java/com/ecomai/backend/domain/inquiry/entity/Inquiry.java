@@ -1,6 +1,7 @@
 package com.ecomai.backend.domain.inquiry.entity;
 
 import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
+import com.ecomai.backend.domain.member.entity.Member;
 import com.ecomai.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,9 +28,12 @@ public class Inquiry extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // FK (초기에는 단순 Long 유지 - 실무 기본 구조)
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY) //(fetch = FetchType.EAGER)는 N+1문제
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
+    private Member member;
 
     @Column(nullable = false)
     private String title;

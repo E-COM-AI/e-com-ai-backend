@@ -23,6 +23,7 @@ public class CreateInquiryRequest {
     private String title;
 
     @NotBlank(message = "문의 내용은 필수입니다.")
+    @Size(max = 5000, message = "문의 내용은 5000자 이하로 입력해주세요.")
     @Schema(
             description = "문의 내용",
             example = "언제 배송되나요?"
