@@ -1,12 +1,18 @@
 package com.ecomai.backend.domain.inquiry.controller;
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
 import com.ecomai.backend.domain.inquiry.service.InquiryService;
 import com.ecomai.backend.global.response.ApiResponse;
+import com.ecomai.backend.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,5 +58,30 @@ public class InquiryController {
         return ResponseEntity
                 .status(HttpStatus.CREATED) // ✨ 201 Created로 설정
                 .body(ApiResponse.success(inquiryService.createInquiry(request)));
+    }
+
+    /**
+     * 내 문의 목록 조회
+     */
+    @GetMapping
+    @Operation(
+            summary = "내 문의 목록 조회",
+            description = "현재 로그인한 회원의 문의 목록을 조회합니다."
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ApiResponse<PageResponse<InquiryListResponse>> getMyInquiries(
+
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
+    ) {
+
+        return ApiResponse.success(
+                inquiryService.getMyInquiries(pageable)
+        );
     }
 }

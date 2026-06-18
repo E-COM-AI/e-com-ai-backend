@@ -25,6 +25,16 @@ public interface InquiryRepository
     /**
      * 로그인 회원의 문의 목록 조회
      *
+     * Soft Delete 제외
+     */
+    Page<Inquiry> findAllByMember_IdAndIsDeletedFalse(
+            Long memberId,
+            Pageable pageable
+    );
+
+    /**
+     * 로그인 회원의 문의 목록 조회
+     *
      * Soft Delete 처리된 데이터는 제외
      * 생성일 기준 최신순 조회 예정
      *

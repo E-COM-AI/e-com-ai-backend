@@ -2,6 +2,7 @@ package com.ecomai.backend.domain.inquiry.service;
 
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
 import com.ecomai.backend.domain.inquiry.entity.Inquiry;
 import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
 import com.ecomai.backend.domain.inquiry.repository.InquiryRepository;
@@ -9,11 +10,15 @@ import com.ecomai.backend.domain.member.entity.Member;
 import com.ecomai.backend.domain.member.repository.MemberRepository;
 import com.ecomai.backend.global.exception.BusinessException;
 import com.ecomai.backend.global.response.ErrorCode;
+import com.ecomai.backend.global.response.PageResponse;
 import com.ecomai.backend.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 
 /**
@@ -84,6 +89,50 @@ public class InquiryService {
                 .title(savedInquiry.getTitle())
                 .status(savedInquiry.getStatus().name())
                 .createdAt(savedInquiry.getCreatedAt())
+                .build();
+    }
+
+    /**
+     * 내 문의 목록 조회
+     * * SecurityContext에서 현재 로그인한 회원의 ID를 추출하여
+     * 해당 회원이 작성한 문의 목록을 페이징 처리하여 조회합니다.
+     *
+     * @param pageable 페이지 번호, 사이즈, 정렬 정보가 포함된 Pageable 객체
+     * @return 조회된 문의 목록(Page<InquiryListResponse>)
+     */
+    public PageResponse<InquiryListResponse> getMyInquiries(Pageable pageable) {
+
+        // 현재 인증된 회원의 고유 식별자(ID)를 보안 컨텍스트에서 획득
+        Long memberId = securityUtil.getCurrentMemberId();
+
+        Page<Inquiry> inquiryPage =
+                inquiryRepository.findAllByMember_IdAndIsDeletedFalse(
+                        memberId,
+                        pageable
+                );
+
+        List<InquiryListResponse> items =
+                inquiryPage.getContent()
+                        .stream()
+                        .map(inquiry ->
+                                InquiryListResponse.builder()
+                                        .inquiryId(inquiry.getId())
+                                        .title(inquiry.getTitle())
+                                        .status(inquiry.getStatus())
+                                        .statusDisplay(
+                                                inquiry.getStatus().getDisplay()
+                                        )
+                                        .createdAt(inquiry.getCreatedAt())
+                                        .build()
+                        )
+                        .toList();
+
+        return PageResponse.<InquiryListResponse>builder()
+                .items(items)
+                .page(inquiryPage.getNumber())
+                .size(inquiryPage.getSize())
+                .totalElements(inquiryPage.getTotalElements())
+                .totalPages(inquiryPage.getTotalPages())
                 .build();
     }
 }
