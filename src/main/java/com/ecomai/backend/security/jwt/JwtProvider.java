@@ -1,5 +1,6 @@
 package com.ecomai.backend.security.jwt;
 
+import com.ecomai.backend.domain.member.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -55,7 +56,7 @@ public class JwtProvider {
      * @param email 회원 이메일
      * @return JWT 문자열
      */
-    public String createToken(Long memberId, String email) {
+    public String createToken(Long memberId, String email, Role role) {
 
         Date now = new Date();
 
@@ -66,6 +67,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(memberId))
                 .claim("email", email)
+                .claim("role", role.name())
                 .setIssuedAt(now)
                 .setExpiration(expire)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -83,6 +85,11 @@ public class JwtProvider {
         return Long.valueOf(
                 parseClaims(token).getSubject()
         );
+    }
+
+    // 토큰에서 권한 정보 추출
+    public String getRole(String token) {
+        return parseClaims(token).get("role", String.class);
     }
 
     /**

@@ -35,4 +35,4 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 3600000
+  expiration: ${JWT_EXPIRATION}

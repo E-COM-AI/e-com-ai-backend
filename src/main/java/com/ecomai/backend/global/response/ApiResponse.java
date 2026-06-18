@@ -13,6 +13,15 @@ public class ApiResponse<T> {
     //에러 정보 - 성공 시 null
     private final ApiErrorResponse error;
 
+    //데이터 반환이 없는 성공 응답 메서드 (Void용)
+    public static ApiResponse<Void> success() {
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .data(null)
+                .error(null)
+                .build();
+    }
+
     //성공 응답 생성 메서드
     public static <T> ApiResponse<T> success(T data) {
 

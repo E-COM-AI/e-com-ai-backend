@@ -1,7 +1,10 @@
 package com.ecomai.backend.domain.inquiry.entity;
 
 import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
+import com.ecomai.backend.domain.member.entity.Member;
 import com.ecomai.backend.global.entity.BaseEntity;
+import com.ecomai.backend.global.exception.BusinessException;
+import com.ecomai.backend.global.response.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 고객 문의 Entity
@@ -27,9 +31,12 @@ public class Inquiry extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // FK (초기에는 단순 Long 유지 - 실무 기본 구조)
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY) //(fetch = FetchType.EAGER)는 N+1문제
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
+    private Member member;
 
     @Column(nullable = false)
     private String title;
@@ -79,4 +86,42 @@ public class Inquiry extends BaseEntity {
     public void changeStatus(InquiryStatus status) {
         this.status = status;
     }
+
+    /**
+     * 문의 수정
+     * OPEN(오픈,답변 대기) 상태일 때만 수정 가능
+     */
+    public void update(String title, String content) {
+        validateOpenStatus(); // 공통 상태 검증 로직 분리
+        this.title = title;
+        this.content = content;
+    }
+
+    /**
+     * 문의 취소 (Soft Delete)
+     * OPEN(오픈,답변 대기) 상태일 때만 취소 가능
+     */
+    public void cancel() {
+        validateOpenStatus(); // 취소할 때도 OPEN 상태인지 검증!
+        super.delete();       // 뚱이님이 말씀하신 부모(super)의 BaseEntity.delete() 호출!
+    }
+
+    /**
+     * 본인 문의 검증 (소유권 검증)
+     */
+    public void validateOwner(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+    }
+
+    /**
+     * OPEN 상태 검증 공통 메서드 (내부 캡슐화)
+     */
+    private void validateOpenStatus() {
+        if (this.status != InquiryStatus.OPEN) {
+            throw new BusinessException(ErrorCode.INVALID_INQUIRY_STATUS);
+        }
+    }
+
 }

@@ -12,6 +12,18 @@ public enum ErrorCode {
             "서버 내부 오류가 발생했습니다."
     ),
 
+    ACCESS_DENIED(
+            HttpStatus.FORBIDDEN,
+            "AUTH_403",
+            "권한이 없습니다."
+    ),
+
+    FORBIDDEN(//본인 글 아닌 경우
+            HttpStatus.FORBIDDEN,
+            "COMMON_403",
+            "접근 권한이 없습니다."
+    ),
+
     INVALID_REQUEST(
             HttpStatus.BAD_REQUEST,
             "COMMON_400",
@@ -57,6 +69,12 @@ public enum ErrorCode {
             HttpStatus.UNAUTHORIZED,
             "MEMBER_401",
             "비밀번호가 일치하지 않습니다."
+    ),
+
+    INVALID_INQUIRY_STATUS(
+            HttpStatus.BAD_REQUEST,
+            "INQUIRY_400",
+            "현재 상태에서는 수정할 수 없습니다."
     ),
 
     /*
