@@ -2,6 +2,7 @@ package com.ecomai.backend.domain.inquiry.service;
 
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
 import com.ecomai.backend.domain.inquiry.entity.Inquiry;
 import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
@@ -133,6 +134,38 @@ public class InquiryService {
                 .size(inquiryPage.getSize())
                 .totalElements(inquiryPage.getTotalElements())
                 .totalPages(inquiryPage.getTotalPages())
+                .build();
+    }
+
+    /**
+     * 내 문의 상세 조회
+     * * 본인의 문의가 맞는지를 검증한 후 상세 정보를 반환합니다.
+     *
+     * @param inquiryId 문의 ID
+     * @return 문의 상세 정보
+     */
+    public InquiryDetailResponse getMyInquiry(Long inquiryId) {
+
+        // 1. 현재 사용자 식별자 획득
+        Long memberId = securityUtil.getCurrentMemberId();
+
+        // 2. 문의 존재 여부 확인 (Soft Delete 미포함)
+        Inquiry inquiry = inquiryRepository.findByIdAndIsDeletedFalse(inquiryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INQUIRY_NOT_FOUND));
+
+        // 3. 본인 소유의 문의인지 권한 검증
+        if (!inquiry.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+
+        // 4. 상세 정보 DTO 변환 및 반환
+        return InquiryDetailResponse.builder()
+                .inquiryId(inquiry.getId())
+                .title(inquiry.getTitle())
+                .content(inquiry.getContent())
+                .status(inquiry.getStatus())
+                .statusDisplay(inquiry.getStatus().getDisplay()) // Enum 메서드명 수정 반영
+                .createdAt(inquiry.getCreatedAt())
                 .build();
     }
 }

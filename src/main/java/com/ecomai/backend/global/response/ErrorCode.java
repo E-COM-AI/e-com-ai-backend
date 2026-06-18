@@ -18,6 +18,12 @@ public enum ErrorCode {
             "권한이 없습니다."
     ),
 
+    FORBIDDEN(//본인 글 아닌 경우
+            HttpStatus.FORBIDDEN,
+            "COMMON_403",
+            "접근 권한이 없습니다."
+    ),
+
     INVALID_REQUEST(
             HttpStatus.BAD_REQUEST,
             "COMMON_400",

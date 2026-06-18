@@ -1,6 +1,7 @@
 package com.ecomai.backend.domain.inquiry.controller;
 import com.ecomai.backend.domain.inquiry.dto.request.CreateInquiryRequest;
 import com.ecomai.backend.domain.inquiry.dto.response.CreateInquiryResponse;
+import com.ecomai.backend.domain.inquiry.dto.response.InquiryDetailResponse;
 import com.ecomai.backend.domain.inquiry.dto.response.InquiryListResponse;
 import com.ecomai.backend.domain.inquiry.service.InquiryService;
 import com.ecomai.backend.global.response.ApiResponse;
@@ -82,6 +83,28 @@ public class InquiryController {
 
         return ApiResponse.success(
                 inquiryService.getMyInquiries(pageable)
+        );
+    }
+
+    /**
+     * 내 문의 상세 조회
+     */
+    @GetMapping("/{inquiryId}")
+    @Operation(
+            summary = "내 문의 상세 조회",
+            description = "현재 로그인한 회원의 문의 상세 정보를 조회합니다."
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ApiResponse<InquiryDetailResponse> getMyInquiry(
+
+            @PathVariable
+            Long inquiryId
+    ) {
+
+        return ApiResponse.success(
+                inquiryService.getMyInquiry(
+                        inquiryId
+                )
         );
     }
 }
