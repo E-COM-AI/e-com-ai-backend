@@ -10,6 +10,7 @@ import com.ecomai.backend.global.response.ApiResponse;
 import com.ecomai.backend.global.response.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -139,6 +140,35 @@ public class InquiryController {
                         request
                 )
         );
+    }
+
+    /**
+     * 문의 취소
+     *
+     * OPEN 상태의 문의만 취소 가능
+     * 실제 삭제가 아닌 Soft Delete 처리
+     */
+    @DeleteMapping("/{inquiryId}")
+    @Operation(
+            summary = "문의 취소",
+            description = "OPEN 상태의 문의만 취소 가능합니다. 실제 삭제가 아닌 Soft Delete 처리됩니다."
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ApiResponse<Void> cancelInquiry(
+
+            @Parameter(
+                    description = "문의 ID",
+                    example = "1"
+            )
+            @PathVariable
+            Long inquiryId
+    ) {
+
+        inquiryService.cancelInquiry(
+                inquiryId
+        );
+
+        return ApiResponse.success();
     }
 
 }

@@ -233,4 +233,32 @@ public class InquiryService {
                 .build();
     }
 
+    /**
+     * 문의 취소
+     *
+     * OPEN 상태에서만 취소 가능
+     *
+     * @param inquiryId 문의 ID
+     */
+    @Transactional
+    public void cancelInquiry(
+            Long inquiryId
+    ) {
+
+        Long memberId = securityUtil.getCurrentMemberId();
+
+        Inquiry inquiry = inquiryRepository.findByIdAndIsDeletedFalse(inquiryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INQUIRY_NOT_FOUND));
+
+        /**
+         * 본인 문의 검증
+         */
+        inquiry.validateOwner(memberId);
+
+        /**
+         * Soft Delete 처리
+         */
+        inquiry.cancel();
+    }
+
 }
