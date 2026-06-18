@@ -109,7 +109,7 @@ public class InquiryService {
         Long memberId = securityUtil.getCurrentMemberId();
 
         Page<Inquiry> inquiryPage =
-                inquiryRepository.findAllByMember_IdAndIsDeletedFalse(
+                inquiryRepository.findAllByMemberIdAndIsDeletedFalse(
                         memberId,
                         pageable
                 );
