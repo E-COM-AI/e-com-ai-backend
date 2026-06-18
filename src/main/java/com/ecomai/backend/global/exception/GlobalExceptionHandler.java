@@ -5,6 +5,8 @@ import com.ecomai.backend.global.response.ApiErrorResponse;
 import com.ecomai.backend.global.response.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +57,19 @@ public class GlobalExceptionHandler{
     ) {
         log.warn("Validation Failed: {}", exception.getMessage());
         return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
+
+    /**
+     * 권한 부족 시 발생하는 예외 처리
+     * (Spring Security 권한 부족 예외)
+     */
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    protected ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
+            Exception exception
+    ) {
+        log.warn("Access Denied: {}", exception.getMessage());
+        return createErrorResponse(ErrorCode.ACCESS_DENIED);
     }
 
     /**

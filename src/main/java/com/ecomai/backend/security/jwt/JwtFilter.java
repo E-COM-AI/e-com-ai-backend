@@ -5,12 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * JWT 인증 필터
@@ -28,7 +30,6 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
         String header = request.getHeader("Authorization");
 
         // 1. 토큰 존재 여부 확인
@@ -38,15 +39,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // 2. 토큰 유효성 검사
             if (jwtProvider.validateToken(token)) {
-
                 Long memberId = jwtProvider.getMemberId(token);
+                String role = jwtProvider.getRole(token);
 
-                // 3. 인증 객체 생성 (실무 최소 구조)
+                List<SimpleGrantedAuthority> authorities = Collections.singletonList(
+                        new SimpleGrantedAuthority(role)
+                );
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 memberId,
                                 null,
-                                Collections.emptyList()
+                                authorities // ✨ 빈 리스트 대신 권한 리스트 전달
                         );
 
                 // 4. SecurityContext 저장

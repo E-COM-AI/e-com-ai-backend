@@ -12,6 +12,12 @@ public enum ErrorCode {
             "서버 내부 오류가 발생했습니다."
     ),
 
+    ACCESS_DENIED(
+            HttpStatus.FORBIDDEN,
+            "AUTH_403",
+            "권한이 없습니다."
+    ),
+
     INVALID_REQUEST(
             HttpStatus.BAD_REQUEST,
             "COMMON_400",
