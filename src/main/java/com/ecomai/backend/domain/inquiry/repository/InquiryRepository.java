@@ -1,6 +1,7 @@
 package com.ecomai.backend.domain.inquiry.repository;
 
 import com.ecomai.backend.domain.inquiry.entity.Inquiry;
+import com.ecomai.backend.domain.inquiry.enums.InquiryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,6 +35,15 @@ public interface InquiryRepository
      */
     Page<Inquiry> findAllByMemberIdAndIsDeletedFalse(
             Long memberId,
+            Pageable pageable
+    );
+
+    /**
+     * 상태별 문의 조회
+     */
+    Page<Inquiry> findAllByMemberIdAndStatusAndIsDeletedFalse(
+            Long memberId,
+            InquiryStatus status,
             Pageable pageable
     );
 }

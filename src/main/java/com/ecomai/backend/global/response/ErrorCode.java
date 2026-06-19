@@ -77,6 +77,12 @@ public enum ErrorCode {
             "현재 상태에서는 수정할 수 없습니다."
     ),
 
+    INVALID_INQUIRY_STATUS_FILTER(
+            HttpStatus.BAD_REQUEST,
+            "INQUIRY_400_1",
+            "잘못된 문의 상태입니다."
+    ),
+
     /*
      * 문의 관련 에러
      */
