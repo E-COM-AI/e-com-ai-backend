@@ -75,7 +75,7 @@ public class InquiryController {
     )
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     public ApiResponse<PageResponse<InquiryListResponse>> getMyInquiries(
-
+            @RequestParam(required = false) String status,
             @PageableDefault(
                     page = 0,
                     size = 10,
@@ -86,7 +86,7 @@ public class InquiryController {
     ) {
 
         return ApiResponse.success(
-                inquiryService.getMyInquiries(pageable)
+                inquiryService.getMyInquiries(status, pageable)
         );
     }
 

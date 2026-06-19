@@ -26,6 +26,9 @@ public class CreateInquiryResponse {
     @Schema(description = "문의 상태")
     String status;
 
+    @Schema(description = "문의 상태(한글)")
+    String statusDisplay;
+
     @Schema(description = "생성 시각")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     LocalDateTime createdAt;

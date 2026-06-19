@@ -90,6 +90,7 @@ public class InquiryService {
                 .inquiryId(savedInquiry.getId())
                 .title(savedInquiry.getTitle())
                 .status(savedInquiry.getStatus().name())
+                .statusDisplay(inquiry.getStatus().getDisplay())
                 .createdAt(savedInquiry.getCreatedAt())
                 .build();
     }
@@ -103,16 +104,47 @@ public class InquiryService {
      * @return 조회된 문의 목록(Page<InquiryListResponse>)
      */
     @Transactional(readOnly = true)
-    public PageResponse<InquiryListResponse> getMyInquiries(Pageable pageable) {
+    public PageResponse<InquiryListResponse> getMyInquiries(String status, Pageable pageable) {
 
         // 현재 인증된 회원의 고유 식별자(ID)를 보안 컨텍스트에서 획득
         Long memberId = securityUtil.getCurrentMemberId();
 
-        Page<Inquiry> inquiryPage =
-                inquiryRepository.findAllByMemberIdAndIsDeletedFalse(
-                        memberId,
-                        pageable
+        Page<Inquiry> inquiryPage;
+
+        // 상태 필터 없음
+        if (status == null || status.isBlank()) {
+
+            inquiryPage =
+                    inquiryRepository.findAllByMemberIdAndIsDeletedFalse(
+                            memberId,
+                            pageable
+                    );
+
+        } else {
+
+            InquiryStatus inquiryStatus;
+
+            try {
+
+                inquiryStatus = InquiryStatus.valueOf(
+                        status.toUpperCase()
                 );
+
+            } catch (IllegalArgumentException e) {
+
+                throw new BusinessException(
+                        ErrorCode.INVALID_INQUIRY_STATUS_FILTER
+                );
+            }
+
+            inquiryPage =
+                    inquiryRepository.findAllByMemberIdAndStatusAndIsDeletedFalse(
+                            memberId,
+                            inquiryStatus,
+                            pageable
+                    );
+        }
+
 
         List<InquiryListResponse> items =
                 inquiryPage.getContent()
